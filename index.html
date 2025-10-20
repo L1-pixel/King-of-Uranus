@@ -590,7 +590,7 @@ ship.tilt, targetTilt, 0.18);
   if (typeof tryShoot === "function")
     btnShoot.addEventListener("touchstart", e => { e.preventDefault(); tryShoot(); }, { passive: false });
 })();
-  <!-- Мобильные кнопки управления -->
+<!-- Мобильное управление -->
 <div id="mobileControls">
   <button id="btnLeft">⬅️</button>
   <button id="btnRight">➡️</button>
@@ -598,34 +598,46 @@ ship.tilt, targetTilt, 0.18);
 </div>
 
 <script>
-  // Ждём, пока страница загрузится
-  document.addEventListener("DOMContentLoaded", () => {
-    const btnLeft = document.getElementById("btnLeft");
-    const btnRight = document.getElementById("btnRight");
-    const btnShoot = document.getElementById("btnShoot");
+document.addEventListener("DOMContentLoaded", () => {
+  const btnLeft = document.getElementById("btnLeft");
+  const btnRight = document.getElementById("btnRight");
+  const btnShoot = document.getElementById("btnShoot");
 
-    function holdButton(btn, action) {
-      let interval;
-      btn.addEventListener("touchstart", e => {
-        e.preventDefault();
-        interval = setInterval(action, 60);
-      });
-      btn.addEventListener("touchend", () => clearInterval(interval));
-    }
+  // Проверяем, что глобальные функции существуют
+  function safeCall(fn) {
+    if (typeof fn === "function") fn();
+  }
 
-    // Привязываем кнопки к функциям движения и выстрела
-    if (typeof moveLeft === "function") holdButton(btnLeft, moveLeft);
-    if (typeof moveRight === "function") holdButton(btnRight, moveRight);
-    if (typeof tryShoot === "function") {
-      btnShoot.addEventListener("touchstart", e => {
-        e.preventDefault();
-        tryShoot();
-      });
-    }
+  // Движение влево
+  btnLeft.addEventListener("touchstart", e => {
+    e.preventDefault();
+    window.MOVE_LEFT = setInterval(() => {
+      if (typeof moveShip === "function") moveShip(-1);
+      else if (typeof moveLeft === "function") moveLeft();
+    }, 50);
   });
+  btnLeft.addEventListener("touchend", () => clearInterval(window.MOVE_LEFT));
+
+  // Движение вправо
+  btnRight.addEventListener("touchstart", e => {
+    e.preventDefault();
+    window.MOVE_RIGHT = setInterval(() => {
+      if (typeof moveShip === "function") moveShip(1);
+      else if (typeof moveRight === "function") moveRight();
+    }, 50);
+  });
+  btnRight.addEventListener("touchend", () => clearInterval(window.MOVE_RIGHT));
+
+  // Стрельба
+  btnShoot.addEventListener("touchstart", e => {
+    e.preventDefault();
+    safeCall(window.tryShoot);
+  });
+});
 </script>
 </body>
 </html>
+
 
 
 
