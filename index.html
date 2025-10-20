@@ -535,5 +535,35 @@ ship.tilt, targetTilt, 0.18);
   requestAnimationFrame(frame);
 })();
 </script>
+  <!-- Мобильные кнопки управления -->
+<div id="mobileControls">
+  <button id="btnUp">▲</button>
+  <button id="btnShoot">●</button>
+  <button id="btnDown">▼</button>
+</div>
+
+<script>
+(() => {
+  const btnUp = document.getElementById("btnUp");
+  const btnDown = document.getElementById("btnDown");
+  const btnShoot = document.getElementById("btnShoot");
+
+  function hold(btn, action) {
+    let interval;
+    btn.addEventListener("touchstart", e => {
+      e.preventDefault();
+      action();
+      interval = setInterval(action, 50);
+    }, { passive: false });
+    btn.addEventListener("touchend", () => clearInterval(interval));
+  }
+
+  if (typeof moveUp === "function") hold(btnUp, moveUp);
+  if (typeof moveDown === "function") hold(btnDown, moveDown);
+  if (typeof tryShoot === "function")
+    btnShoot.addEventListener("touchstart", e => { e.preventDefault(); tryShoot(); }, { passive: false });
+})();
+</script>
 </body>
 </html>
+
